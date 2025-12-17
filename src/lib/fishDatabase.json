@@ -1,0 +1,261 @@
+[
+  {
+    "id": "101",
+    "common_name": "Neon Tetra",
+    "scientific_name": "Paracheirodon innesi",
+    "adult_size_cm": 4,
+    "bioload_score": 2,
+    "min_tank_liters": 40,
+    "parameters": {
+      "temp_min": 20,
+      "temp_max": 26,
+      "ph_min": 6.0,
+      "ph_max": 7.5
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": true,
+      "min_group_size": 6
+    }
+  },
+  {
+    "id": "102",
+    "common_name": "Betta",
+    "scientific_name": "Betta splendens",
+    "adult_size_cm": 7,
+    "bioload_score": 3,
+    "min_tank_liters": 20,
+    "parameters": {
+      "temp_min": 24,
+      "temp_max": 28,
+      "ph_min": 6.5,
+      "ph_max": 7.5
+    },
+    "social": {
+      "aggression": "aggressive",
+      "schooling_required": false
+    }
+  },
+  {
+    "id": "103",
+    "common_name": "Goldfish",
+    "scientific_name": "Carassius auratus",
+    "adult_size_cm": 30,
+    "bioload_score": 10,
+    "min_tank_liters": 75,
+    "parameters": {
+      "temp_min": 18,
+      "temp_max": 22,
+      "ph_min": 6.5,
+      "ph_max": 8.0
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": false
+    }
+  },
+  {
+    "id": "104",
+    "common_name": "Angelfish",
+    "scientific_name": "Pterophyllum scalare",
+    "adult_size_cm": 15,
+    "bioload_score": 5,
+    "min_tank_liters": 100,
+    "parameters": {
+      "temp_min": 24,
+      "temp_max": 30,
+      "ph_min": 6.0,
+      "ph_max": 7.5
+    },
+    "social": {
+      "aggression": "semi-aggressive",
+      "schooling_required": false
+    }
+  },
+  {
+    "id": "105",
+    "common_name": "Guppy",
+    "scientific_name": "Poecilia reticulata",
+    "adult_size_cm": 5,
+    "bioload_score": 2,
+    "min_tank_liters": 20,
+    "parameters": {
+      "temp_min": 22,
+      "temp_max": 28,
+      "ph_min": 6.8,
+      "ph_max": 7.8
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": false
+    }
+  },
+  {
+    "id": "106",
+    "common_name": "Corydoras Catfish",
+    "scientific_name": "Corydoras aeneus",
+    "adult_size_cm": 6,
+    "bioload_score": 3,
+    "min_tank_liters": 40,
+    "parameters": {
+      "temp_min": 22,
+      "temp_max": 26,
+      "ph_min": 6.0,
+      "ph_max": 7.5
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": true,
+      "min_group_size": 4
+    }
+  },
+  {
+    "id": "107",
+    "common_name": "Oscar",
+    "scientific_name": "Astronotus ocellatus",
+    "adult_size_cm": 35,
+    "bioload_score": 12,
+    "min_tank_liters": 200,
+    "parameters": {
+      "temp_min": 22,
+      "temp_max": 28,
+      "ph_min": 6.0,
+      "ph_max": 8.0
+    },
+    "social": {
+      "aggression": "aggressive",
+      "schooling_required": false
+    }
+  },
+  {
+    "id": "108",
+    "common_name": "Zebra Danio",
+    "scientific_name": "Danio rerio",
+    "adult_size_cm": 5,
+    "bioload_score": 2,
+    "min_tank_liters": 30,
+    "parameters": {
+      "temp_min": 18,
+      "temp_max": 24,
+      "ph_min": 6.5,
+      "ph_max": 7.5
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": true,
+      "min_group_size": 6
+    }
+  },
+  {
+    "id": "109",
+    "common_name": "Molly",
+    "scientific_name": "Poecilia sphenops",
+    "adult_size_cm": 10,
+    "bioload_score": 3,
+    "min_tank_liters": 40,
+    "parameters": {
+      "temp_min": 24,
+      "temp_max": 28,
+      "ph_min": 7.0,
+      "ph_max": 8.5
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": false
+    }
+  },
+  {
+    "id": "110",
+    "common_name": "Platy",
+    "scientific_name": "Xiphophorus maculatus",
+    "adult_size_cm": 6,
+    "bioload_score": 2,
+    "min_tank_liters": 30,
+    "parameters": {
+      "temp_min": 22,
+      "temp_max": 26,
+      "ph_min": 7.0,
+      "ph_max": 8.0
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": false
+    }
+  },
+  {
+    "id": "111",
+    "common_name": "Swordtail",
+    "scientific_name": "Xiphophorus hellerii",
+    "adult_size_cm": 12,
+    "bioload_score": 3,
+    "min_tank_liters": 50,
+    "parameters": {
+      "temp_min": 22,
+      "temp_max": 28,
+      "ph_min": 7.0,
+      "ph_max": 8.0
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": false
+    }
+  },
+  {
+    "id": "112",
+    "common_name": "Discus",
+    "scientific_name": "Symphysodon discus",
+    "adult_size_cm": 20,
+    "bioload_score": 8,
+    "min_tank_liters": 150,
+    "parameters": {
+      "temp_min": 26,
+      "temp_max": 30,
+      "ph_min": 5.5,
+      "ph_max": 7.0
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": true,
+      "min_group_size": 5
+    }
+  },
+  {
+    "id": "113",
+    "common_name": "Tiger Barb",
+    "scientific_name": "Puntigrus tetrazona",
+    "adult_size_cm": 7,
+    "bioload_score": 3,
+    "min_tank_liters": 60,
+    "parameters": {
+      "temp_min": 22,
+      "temp_max": 26,
+      "ph_min": 6.0,
+      "ph_max": 7.5
+    },
+    "social": {
+      "aggression": "semi-aggressive",
+      "schooling_required": true,
+      "min_group_size": 6
+    }
+  },
+  {
+    "id": "114",
+    "common_name": "Cherry Barb",
+    "scientific_name": "Puntius titteya",
+    "adult_size_cm": 5,
+    "bioload_score": 2,
+    "min_tank_liters": 40,
+    "parameters": {
+      "temp_min": 23,
+      "temp_max": 27,
+      "ph_min": 6.0,
+      "ph_max": 7.0
+    },
+    "social": {
+      "aggression": "peaceful",
+      "schooling_required": true,
+      "min_group_size": 6
+    }
+  }
+]
+
