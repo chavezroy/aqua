@@ -2,16 +2,19 @@
 
 import { useState } from "react";
 import { useTankStore } from "@/store/useTankStore";
-import fishData from "@/lib/fishDatabase.json";
+import fishDataRaw from "@/lib/fishDatabase.json";
 import { Species } from "@/types";
 import { Search } from "lucide-react";
+
+// Type assert the JSON data as Species[]
+const fishData = fishDataRaw as Species[];
 
 export function FishSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const addFish = useTankStore((state) => state.addFish);
 
   const filteredFish = fishData.filter(
-    (fish: Species) =>
+    (fish) =>
       fish.common_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       fish.scientific_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
@@ -34,7 +37,7 @@ export function FishSearch() {
           {filteredFish.length === 0 ? (
             <p className="p-4 text-gray-500">No fish found</p>
           ) : (
-            filteredFish.map((fish: Species) => (
+            filteredFish.map((fish) => (
               <button
                 key={fish.id}
                 onClick={() => {
