@@ -140,6 +140,7 @@ export default function Setup() {
         setHeight(config.dimensions.height.toString());
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [unitSystem]);
 
 
@@ -169,7 +170,50 @@ export default function Setup() {
             {tankName.trim() && (
               <button
                 type="button"
-                onClick={() => setShowSaveDialog(true)}
+                onClick={() => {
+                  // Save the tank with current form values
+                  const calculatedVolume = calculateVolumeFromDimensions();
+                  let volumeLiters: number;
+                  let volumeGallons: number;
+                  
+                  if (calculatedVolume) {
+                    volumeLiters = calculatedVolume;
+                    volumeGallons = calculatedVolume / 3.78541;
+                  } else {
+                    const volumeNum = parseFloat(volume);
+                    if (!isNaN(volumeNum) && volumeNum > 0) {
+                      if (unitSystem === "metric") {
+                        volumeLiters = volumeNum;
+                        volumeGallons = volumeNum / 3.78541;
+                      } else {
+                        volumeLiters = volumeNum * 3.78541;
+                        volumeGallons = volumeNum;
+                      }
+                    } else {
+                      showToast("warning", "Please enter valid tank dimensions or volume");
+                      return;
+                    }
+                  }
+                  
+                  const tempF = convertTemperatureToF(displayTemp, unitSystem);
+                  const config: TankConfig = {
+                    name: tankName.trim(),
+                    volume_liters: volumeLiters,
+                    volume_gallons: volumeGallons,
+                    filter_capacity: parseFloat(filterCapacity) || 0,
+                    temperature: tempF,
+                    ph,
+                    dimensions: length && width && height ? {
+                      length: parseFloat(length),
+                      width: parseFloat(width),
+                      height: parseFloat(height),
+                    } : undefined,
+                  };
+                  
+                  setConfig(config);
+                  saveTank(tankName.trim());
+                  showToast("success", `Tank "${tankName.trim()}" saved successfully!`);
+                }}
                 className="px-4 py-1.5 text-sm bg-[#14B8A6] text-white rounded-lg hover:bg-[#0D9488] transition flex items-center gap-2"
               >
                 <Save size={16} />
