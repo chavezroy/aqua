@@ -4,7 +4,7 @@ import { runCompatibilityCheck, calculateBioload, calculateSurfaceArea } from "@
 
 interface TankStore extends TankState {
   savedTanks: SavedTank[];
-  setConfig: (config: TankConfig) => void;
+  setConfig: (config: TankConfig | null) => void;
   addFish: (fish: StockedFish["species"], quantity?: number) => void;
   removeFish: (fishId: string) => void;
   updateQuantity: (fishId: string, quantity: number) => void;
@@ -71,12 +71,15 @@ export const useTankStore = create<TankStore>((set, get) => ({
     const state = get();
     if (state.config && state.stockedFish.length > 0) {
       const issues = runCompatibilityCheck(state.config, state.stockedFish, state.unitSystem);
-      const surfaceArea = config.dimensions 
-        ? calculateSurfaceArea(config.dimensions.length, config.dimensions.width, config.dimensions.height, "inches")
+      const surfaceArea = state.config.dimensions 
+        ? calculateSurfaceArea(state.config.dimensions.length, state.config.dimensions.width, state.config.dimensions.height, "inches")
         : undefined;
       const bioload = calculateBioload(state.stockedFish, state.config.volume_liters, surfaceArea);
       const healthScore = Math.max(0, 100 - (issues.filter(i => i.type === "critical").length * 30) - (issues.filter(i => i.type === "warning").length * 10));
       set({ issues, bioloadPercentage: bioload, healthScore });
+    } else if (!config) {
+      // If config is set to null, clear related state
+      set({ issues: [], bioloadPercentage: 0, healthScore: 100 });
     }
   },
 
