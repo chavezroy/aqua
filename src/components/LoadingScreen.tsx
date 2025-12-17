@@ -101,7 +101,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
           transition={{ delay: 0.5, duration: 0.8 }}
         >
           <h1 className="text-6xl sm:text-7xl md:text-8xl font-bold text-white mb-4 drop-shadow-2xl">
-            AquaHarmony
+            Finterest
           </h1>
         </motion.div>
 

@@ -84,7 +84,7 @@ export default function Dashboard() {
       <header className="mb-8 flex flex-col sm:flex-row justify-between items-start gap-4">
         <div className="flex-1">
           <h1 className="text-3xl sm:text-4xl font-bold mb-2">
-            🐠 AquaHarmony
+            🐠 Finterest
           </h1>
           <p className="text-gray-600 mb-1">Your Virtual Aquarium</p>
           {config.name && (

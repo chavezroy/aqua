@@ -86,7 +86,7 @@ export function SplashScreen() {
           transition={{ delay: 0.3, duration: 0.6 }}
         >
           <h1 className="text-5xl sm:text-6xl md:text-7xl font-bold text-white mb-4 drop-shadow-lg">
-            AquaHarmony
+            Finterest
           </h1>
           <div className="flex items-center justify-center gap-2 mb-6">
             <Droplet className="size-5 text-cyan-200" />

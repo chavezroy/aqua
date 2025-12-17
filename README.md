@@ -1,4 +1,4 @@
-# 🐠 AquaHarmony
+# 🐠 Finterest
 
 **Responsive Web Application for Aquarium Compatibility**
 
@@ -10,7 +10,7 @@
 
 ## 📖 Executive Summary
 
-**AquaHarmony** is a web-based utility designed to help aquarium hobbyists stock their tanks responsibly. By cross-referencing user-defined tank parameters (volume, filtration) against a database of fish species, the app provides real-time compatibility scores.
+**Finterest** is a web-based utility designed to help aquarium hobbyists stock their tanks responsibly. By cross-referencing user-defined tank parameters (volume, filtration) against a database of fish species, the app provides real-time compatibility scores.
 
 **The Core Problem:** New hobbyists often inadvertently combine incompatible species, leading to fish mortality.  
 **The Solution:** A "Virtual Tank" builder that flags conflicts immediately using a logic-based compatibility engine.

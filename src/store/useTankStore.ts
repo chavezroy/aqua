@@ -16,8 +16,8 @@ interface TankStore extends TankState {
   setUnitSystem: (system: UnitSystem) => void;
 }
 
-const STORAGE_KEY = "aquaharmony_saved_tanks";
-const UNIT_PREFERENCE_KEY = "aquaharmony_unit_system";
+const STORAGE_KEY = "finterest_saved_tanks";
+const UNIT_PREFERENCE_KEY = "finterest_unit_system";
 
 const loadTanksFromStorage = (): SavedTank[] => {
   if (typeof window === "undefined") return [];

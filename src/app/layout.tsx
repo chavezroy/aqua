@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "AquaHarmony - Aquarium Compatibility Checker",
+  title: "Finterest - Aquarium Compatibility Checker",
   description: "Stock your aquarium responsibly with real-time compatibility checking",
 };
 
