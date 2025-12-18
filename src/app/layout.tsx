@@ -4,6 +4,9 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Finterest - Aquarium Compatibility Checker",
   description: "Stock your aquarium responsibly with real-time compatibility checking",
+  icons: {
+    icon: "/icon.png",
+  },
 };
 
 export default function RootLayout({
