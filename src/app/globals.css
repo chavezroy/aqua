@@ -17,3 +17,15 @@
   }
 }
 
+/* Visual Search Scanning Animation */
+@keyframes scan {
+  0% {
+    top: 0;
+    opacity: 1;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
+}
+

@@ -10,8 +10,8 @@ export function FishSearch() {
   const [searchTerm, setSearchTerm] = useState("");
   const addFish = useTankStore((state) => state.addFish);
 
-  const filteredFish = fishData.filter(
-    (fish: Species) =>
+  const filteredFish = (fishData as Species[]).filter(
+    (fish) =>
       fish.common_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       fish.scientific_name.toLowerCase().includes(searchTerm.toLowerCase())
   );
