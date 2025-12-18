@@ -28,31 +28,31 @@ export function FishCard({ fish, quantity }: FishCardProps) {
   const tempUnit = unitSystem === "imperial" ? "°F" : "°C";
 
   return (
-    <div className="border border-gray-200 rounded-lg p-4 hover:shadow-md transition">
+    <div className="bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl p-4 shadow-lg hover:shadow-xl transition">
       <div className="flex justify-between items-start mb-2">
         <div>
-          <h3 className="font-semibold text-lg">{fish.common_name}</h3>
-          <p className="text-sm text-gray-500 italic">{fish.scientific_name}</p>
+          <h3 className="font-semibold text-lg text-white drop-shadow">{fish.common_name}</h3>
+          <p className="text-sm text-white/80 italic drop-shadow">{fish.scientific_name}</p>
         </div>
         <button
           onClick={() => removeFish(fish.id)}
-          className="text-gray-400 hover:text-red-500"
+          className="text-white/60 hover:text-red-300 transition"
         >
           <X size={20} />
         </button>
       </div>
 
-      <div className="text-sm text-gray-600 mb-3 space-y-1">
+      <div className="text-sm text-white/90 mb-3 space-y-1">
         <p>Size: {fishSize}</p>
         <p>Min Tank: {formatVolume(fish.min_tank_liters, unitSystem)}</p>
         <div className="flex items-center gap-1 mt-2">
-          <Thermometer size={14} className="text-gray-400" />
+          <Thermometer size={14} className="text-white/70" />
           <span className="text-xs">
             {tempMin}-{tempMax}{tempUnit}
           </span>
         </div>
         <div className="flex items-center gap-1">
-          <Droplet size={14} className="text-gray-400" />
+          <Droplet size={14} className="text-white/70" />
           <span className="text-xs">
             pH {fish.parameters.ph_min}-{fish.parameters.ph_max}
           </span>
@@ -78,14 +78,14 @@ export function FishCard({ fish, quantity }: FishCardProps) {
       <div className="flex items-center gap-3">
         <button
           onClick={() => updateQuantity(fish.id, quantity - 1)}
-          className="p-1 rounded hover:bg-gray-100"
+          className="p-1 rounded hover:bg-white/20 text-white transition"
         >
           <Minus size={18} />
         </button>
-        <span className="font-semibold w-8 text-center">{quantity}</span>
+        <span className="font-semibold w-8 text-center text-white drop-shadow">{quantity}</span>
         <button
           onClick={() => updateQuantity(fish.id, quantity + 1)}
-          className="p-1 rounded hover:bg-gray-100"
+          className="p-1 rounded hover:bg-white/20 text-white transition"
         >
           <Plus size={18} />
         </button>

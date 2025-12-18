@@ -13,6 +13,7 @@ import {
   formatTemperature 
 } from "@/lib/unitUtils";
 import { useToast, ToastContainer } from "@/components/ui/ToastNotification";
+import { BackgroundBubbles } from "@/components/BackgroundBubbles";
 
 export default function Setup() {
   const router = useRouter();
@@ -145,16 +146,22 @@ export default function Setup() {
 
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 bg-[#F8FAFC]">
-      <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 max-w-md w-full">
+    <div className="min-h-screen bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 relative overflow-hidden flex items-center justify-center p-4">
+      <BackgroundBubbles />
+      <div className="relative z-10 bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-6 sm:p-8 max-w-md w-full border border-white/50">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 text-sm"
+          className="inline-flex items-center gap-2 text-gray-700 hover:text-gray-900 mb-4 text-sm"
         >
           <ArrowLeft size={16} />
           Back to Dashboard
         </Link>
-        <h1 className="text-3xl font-bold mb-6">Tank Configuration</h1>
+        <div className="flex items-center gap-3 mb-6">
+          <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg">
+            <span className="text-2xl">🐠</span>
+          </div>
+          <h1 className="text-3xl font-bold text-gray-900">Tank Configuration</h1>
+        </div>
         
         {/* Tank Name Input */}
         <div className="mb-6">
@@ -214,7 +221,7 @@ export default function Setup() {
                   saveTank(tankName.trim());
                   showToast("success", `Tank "${tankName.trim()}" saved successfully!`);
                 }}
-                className="px-4 py-1.5 text-sm bg-[#14B8A6] text-white rounded-lg hover:bg-[#0D9488] transition flex items-center gap-2"
+                className="px-4 py-1.5 text-sm bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg shadow-lg transition flex items-center gap-2"
               >
                 <Save size={16} />
                 Save
@@ -268,7 +275,7 @@ export default function Setup() {
                   value={length}
                   onChange={(e) => setLength(e.target.value)}
                   placeholder="Length"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#14B8A6] text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
                   min="0"
                   step="0.1"
                 />
@@ -279,7 +286,7 @@ export default function Setup() {
                   value={width}
                   onChange={(e) => setWidth(e.target.value)}
                   placeholder="Width"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#14B8A6] text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
                   min="0"
                   step="0.1"
                 />
@@ -290,7 +297,7 @@ export default function Setup() {
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
                   placeholder="Height"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#14B8A6] text-sm"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 text-sm"
                   min="0"
                   step="0.1"
                 />
@@ -310,7 +317,7 @@ export default function Setup() {
                 type="number"
                 value={volume}
                 onChange={(e) => setVolume(e.target.value)}
-                className={`flex-1 px-3 py-1.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-[#14B8A6] ${
+                className={`flex-1 px-3 py-1.5 text-sm border rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 ${
                   volumeError ? "border-red-500" : "border-gray-300"
                 }`}
                 required={!length || !width || !height}
@@ -327,7 +334,7 @@ export default function Setup() {
               <p className="mt-1 text-xs text-red-500">{volumeError}</p>
             )}
             {length && width && height && calculateVolumeFromDimensions() && (
-              <p className="mt-1 text-xs text-[#14B8A6]">
+              <p className="mt-1 text-xs text-cyan-600">
                 Calculated: {calculateVolumeFromDimensions()!.toFixed(2)}L ({calculateVolumeFromDimensions()! / 3.78541} gal)
               </p>
             )}
@@ -378,7 +385,7 @@ export default function Setup() {
               type="number"
               value={filterCapacity}
               onChange={(e) => setFilterCapacity(e.target.value)}
-              className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#14B8A6]"
+              className="w-full px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500"
               min="0"
               placeholder={unitSystem === "metric" ? "Liters per hour" : "Gallons per hour"}
             />
@@ -394,7 +401,7 @@ export default function Setup() {
             </button>
             <button
               type="submit"
-              className="flex-1 px-6 py-3 bg-[#0F172A] text-white rounded-lg hover:bg-[#1E293B] transition font-medium"
+              className="flex-1 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white rounded-lg shadow-lg transition font-medium"
             >
               Save Configuration
             </button>

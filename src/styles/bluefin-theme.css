@@ -1,0 +1,282 @@
+/**
+ * Bluefin Theme - Finterest Design System
+ * 
+ * A modern glass morphism design system inspired by aquatic aesthetics.
+ * Features gradient backgrounds, translucent cards, and smooth animations.
+ * 
+ * Compatible with Tailwind CSS v3.4+
+ */
+
+/* ============================================
+   BLUEFIN THEME COLOR SYSTEM
+   ============================================ */
+
+:root {
+  /* Primary Gradient Colors */
+  --bluefin-cyan-400: #22d3ee;
+  --bluefin-cyan-500: #06b6d4;
+  --bluefin-cyan-600: #0891b2;
+  --bluefin-blue-400: #60a5fa;
+  --bluefin-blue-500: #3b82f6;
+  --bluefin-blue-600: #2563eb;
+  
+  /* Glass Morphism Colors */
+  --bluefin-glass-primary: rgba(255, 255, 255, 0.1);
+  --bluefin-glass-secondary: rgba(255, 255, 255, 0.2);
+  --bluefin-glass-tertiary: rgba(255, 255, 255, 0.3);
+  --bluefin-glass-border-primary: rgba(255, 255, 255, 0.2);
+  --bluefin-glass-border-secondary: rgba(255, 255, 255, 0.3);
+  --bluefin-glass-border-tertiary: rgba(255, 255, 255, 0.4);
+  
+  /* Status Colors */
+  --bluefin-success: #22C55E;
+  --bluefin-warning: #F59E0B;
+  --bluefin-critical: #EF4444;
+  --bluefin-info: #22D3EE;
+  
+  /* Text Colors */
+  --bluefin-text-primary: rgba(255, 255, 255, 1);
+  --bluefin-text-secondary: rgba(255, 255, 255, 0.9);
+  --bluefin-text-tertiary: rgba(255, 255, 255, 0.8);
+  --bluefin-text-muted: rgba(255, 255, 255, 0.7);
+  
+  /* Background Bubbles */
+  --bluefin-bubble-white: rgba(255, 255, 255, 0.1);
+  --bluefin-bubble-blue: rgba(96, 165, 250, 0.2);
+  --bluefin-bubble-cyan: rgba(34, 211, 238, 0.2);
+  --bluefin-bubble-teal: rgba(20, 184, 166, 0.2);
+  
+  /* Shadows */
+  --bluefin-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --bluefin-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --bluefin-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --bluefin-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  --bluefin-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  
+  /* Border Radius */
+  --bluefin-radius-sm: 0.5rem;   /* 8px */
+  --bluefin-radius-md: 0.75rem;  /* 12px */
+  --bluefin-radius-lg: 1rem;     /* 16px */
+  --bluefin-radius-xl: 1.5rem;   /* 24px */
+  --bluefin-radius-full: 9999px;
+  
+  /* Blur Effects */
+  --bluefin-blur-sm: 4px;
+  --bluefin-blur-md: 12px;
+  --bluefin-blur-lg: 16px;
+  --bluefin-blur-xl: 24px;
+  --bluefin-blur-2xl: 40px;
+  --bluefin-blur-3xl: 64px;
+}
+
+/* ============================================
+   BLUEFIN THEME UTILITY CLASSES
+   ============================================ */
+
+/* Background Gradients */
+.bluefin-gradient-primary {
+  background: linear-gradient(to bottom right, var(--bluefin-cyan-400), var(--bluefin-blue-500), var(--bluefin-blue-600));
+}
+
+.bluefin-gradient-button {
+  background: linear-gradient(to right, var(--bluefin-cyan-500), var(--bluefin-blue-500));
+}
+
+.bluefin-gradient-button-hover {
+  background: linear-gradient(to right, var(--bluefin-cyan-600), var(--bluefin-blue-600));
+}
+
+.bluefin-gradient-icon {
+  background: linear-gradient(to bottom right, var(--bluefin-cyan-400), var(--bluefin-blue-500));
+}
+
+/* Glass Morphism Cards */
+.bluefin-glass-primary {
+  background: var(--bluefin-glass-primary);
+  backdrop-filter: blur(var(--bluefin-blur-md));
+  border: 1px solid var(--bluefin-glass-border-primary);
+}
+
+.bluefin-glass-secondary {
+  background: var(--bluefin-glass-secondary);
+  backdrop-filter: blur(var(--bluefin-blur-sm));
+  border: 1px solid var(--bluefin-glass-border-secondary);
+}
+
+.bluefin-glass-tertiary {
+  background: var(--bluefin-glass-tertiary);
+  backdrop-filter: blur(var(--bluefin-blur-sm));
+  border: 1px solid var(--bluefin-glass-border-tertiary);
+}
+
+/* Text Colors */
+.bluefin-text-primary {
+  color: var(--bluefin-text-primary);
+}
+
+.bluefin-text-secondary {
+  color: var(--bluefin-text-secondary);
+}
+
+.bluefin-text-tertiary {
+  color: var(--bluefin-text-tertiary);
+}
+
+.bluefin-text-muted {
+  color: var(--bluefin-text-muted);
+}
+
+/* Drop Shadow for Text */
+.bluefin-text-shadow {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.bluefin-text-shadow-lg {
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ============================================
+   BLUEFIN THEME COMPONENT PATTERNS
+   ============================================ */
+
+/* Main Background */
+.bluefin-bg {
+  background: linear-gradient(to bottom right, var(--bluefin-cyan-400), var(--bluefin-blue-500), var(--bluefin-blue-600));
+  min-height: 100vh;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Primary Card */
+.bluefin-card-primary {
+  background: var(--bluefin-glass-primary);
+  backdrop-filter: blur(var(--bluefin-blur-md));
+  border: 1px solid var(--bluefin-glass-border-primary);
+  border-radius: var(--bluefin-radius-lg);
+  box-shadow: var(--bluefin-shadow-xl);
+}
+
+/* Secondary Card (Nested) */
+.bluefin-card-secondary {
+  background: var(--bluefin-glass-secondary);
+  backdrop-filter: blur(var(--bluefin-blur-sm));
+  border: 1px solid var(--bluefin-glass-border-secondary);
+  border-radius: var(--bluefin-radius-md);
+  box-shadow: var(--bluefin-shadow-lg);
+}
+
+/* Tertiary Card (Deeply Nested) */
+.bluefin-card-tertiary {
+  background: var(--bluefin-glass-tertiary);
+  backdrop-filter: blur(var(--bluefin-blur-sm));
+  border: 1px solid var(--bluefin-glass-border-tertiary);
+  border-radius: var(--bluefin-radius-sm);
+  box-shadow: var(--bluefin-shadow-md);
+}
+
+/* Header */
+.bluefin-header {
+  background: var(--bluefin-glass-primary);
+  backdrop-filter: blur(var(--bluefin-blur-md));
+  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  box-shadow: var(--bluefin-shadow-lg);
+}
+
+/* Gradient Button */
+.bluefin-btn-gradient {
+  background: linear-gradient(to right, var(--bluefin-cyan-500), var(--bluefin-blue-500));
+  color: white;
+  box-shadow: var(--bluefin-shadow-lg);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bluefin-btn-gradient:hover {
+  background: linear-gradient(to right, var(--bluefin-cyan-600), var(--bluefin-blue-600));
+}
+
+/* Glass Button */
+.bluefin-btn-glass {
+  background: var(--bluefin-glass-secondary);
+  backdrop-filter: blur(var(--bluefin-blur-sm));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: white;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bluefin-btn-glass:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* Icon Badge */
+.bluefin-icon-badge {
+  background: linear-gradient(to bottom right, var(--bluefin-cyan-400), var(--bluefin-blue-500));
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--bluefin-shadow-lg);
+}
+
+/* Progress Bar Container */
+.bluefin-progress-container {
+  background: var(--bluefin-glass-secondary);
+  backdrop-filter: blur(var(--bluefin-blur-sm));
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 9999px;
+  box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Alert Styles */
+.bluefin-alert-critical {
+  background: rgba(239, 68, 68, 0.2);
+  border: 1px solid rgba(248, 113, 113, 0.3);
+  color: rgb(254, 226, 226);
+}
+
+.bluefin-alert-warning {
+  background: rgba(245, 158, 11, 0.2);
+  border: 1px solid rgba(251, 191, 36, 0.3);
+  color: rgb(254, 243, 199);
+}
+
+.bluefin-alert-success {
+  background: rgba(34, 197, 94, 0.2);
+  border: 1px solid rgba(74, 222, 128, 0.3);
+  color: rgb(220, 252, 231);
+}
+
+/* ============================================
+   BLUEFIN THEME ANIMATIONS
+   ============================================ */
+
+.bluefin-transition {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bluefin-transition-fast {
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.bluefin-transition-slow {
+  transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ============================================
+   BLUEFIN THEME RESPONSIVE UTILITIES
+   ============================================ */
+
+/* Responsive text shadows */
+.bluefin-text-responsive {
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 1024px) {
+  .bluefin-text-responsive {
+    text-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  }
+}

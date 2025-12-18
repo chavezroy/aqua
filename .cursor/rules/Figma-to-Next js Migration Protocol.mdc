@@ -1,0 +1,147 @@
+---
+alwaysApply: true
+---
+## 3. Architecture Strategy
+
+### Component Separation (Server vs. Client)
+
+To maximize performance in Next.js 14, we must strictly separate static content from interactive elements.
+
+### The Header
+
+- **`Header.tsx` (Server Component):**
+    - Contains the Logo, high-level layout, and static navigation links.
+    - Fetches any necessary data.
+- **`MobileMenu.tsx` (Client Component):**
+    - Marked with `'use client'`.
+    - Handles `useState` (open/closed), `onClick` events, and Framer Motion animations.
+
+### The Footer
+
+- **`Footer.tsx` (Server Component):**
+    - Fully static.
+    - Links should be mapped from a configuration array (e.g., `const FOOTER_LINKS = [...]`) rather than hardcoded JSX.
+
+### File Structure Convention
+
+All refactored components should be placed according to this directory structure:
+
+```
+/src
+  /components
+    /layout
+      Header.tsx        <-- Main assembler (Server)
+      Footer.tsx        <-- Main assembler (Server)
+      MobileMenu.tsx    <-- Interaction logic (Client)
+    /ui
+      Logo.tsx
+      Button.tsx
+    /icons
+      [IconName].tsx    <-- Converted SVGs
+
+```
+
+---
+
+## 4. Implementation Rules
+
+### A. Styling (Tailwind CSS 4)
+
+- **No external CSS files.** All styles must be converted to utility classes inside `className`.
+- **Responsiveness:** Use Tailwind breakpoints (`sm:`, `md:`, `lg:`) to handle responsive variations.
+    - *Rule:* Do not use JS `window.resize` listeners for layout changes; use CSS media queries via Tailwind.
+- **Units:** Convert all Figma `px` values to `rem` (1rem = 16px) or use Tailwind's spacing scale (e.g., `px-4`, `mt-8`).
+
+### B. Assets & Icons
+
+- **Cleanup:** Do not migrate the `src/imports` folder from the prototype.
+- **SVGs:** Extract the SVG path data and create a clean React component, or use an icon library (like Lucide React) if the design allows.
+- **Images:** All images must be imported and rendered using the `Next/Image` component to ensure automatic optimization.
+
+### C. Animations (Framer Motion)
+
+- Replace CSS transitions with `<motion.div>` variants.
+- Use `<AnimatePresence>` for mounting/unmounting components (like the mobile dropdown).
+
+---
+
+## 5. Reference Patterns
+
+### Mobile Menu (Standard Pattern)
+
+Use this pattern for the `MobileMenu.tsx` client component:
+
+```tsx
+'use client'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import Link from 'next/link'
+
+export default function MobileMenu() {
+  const [isOpen, setIsOpen] = useState(false)
+
+  return (
+    <>
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label="Toggle Menu"
+        className="lg:hidden p-2"
+      >
+        {/* Hamburger Icon */}
+      </button>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 z-50 bg-white p-4"
+          >
+            {/* Menu Links */}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
+
+```
+
+---
+
+## 6. AI Generation Prompt Template
+
+*Copy and paste the block below into your AI assistant when starting a new component migration.*
+
+```markdown
+# Role
+You are a Senior Frontend Engineer specializing in Next.js 14 (App Router), Tailwind CSS 4, and Framer Motion.
+
+# Task
+Refactor the attached "Figma Make" source code into a production-ready Next.js component following strict strict project protocols.
+
+# Output Rules
+1. **Structure:**
+   - Split code into Server Components (default) and Client Components (only for interaction).
+   - Use `next/link` for all internal navigation.
+   - Use `next/image` for all bitmaps.
+
+2. **Styling:**
+   - Use ONLY Tailwind CSS 4 utility classes. No custom CSS modules.
+   - Convert `px` values to `rem` or Tailwind spacing tokens.
+   - Ensure `md` and `lg` breakpoints are used for responsive states.
+
+3. **Cleanup:**
+   - Remove all imports from `src/imports`.
+   - Convert imported SVG files into inline React components or clean Icon components.
+   - Extract repeated data (menu links) into arrays/constants.
+
+4. **Context:**
+   - The user provided code is from a prototype. It may contain absolute positioning or fixed widths. Refactor this to use Flexbox/Grid and relative spacing.
+
+# Inputs
+[PASTE COMPONENT CODE HERE]
+[PASTE CSS HERE]
+
+```

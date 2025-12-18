@@ -1,0 +1,376 @@
+---
+alwaysApply: true
+---
+
+# Tailwind CSS Errors - Prevention Guide
+
+## Overview
+
+This document outlines common Tailwind CSS errors and how to prevent them, particularly focusing on layer directive errors and other configuration issues.
+
+---
+
+## Critical Rule: Tailwind Layer Directives
+
+### ❌ **NEVER** use `@layer` directives in imported CSS files
+
+**Error:**
+```markdown:/Users/katwalker/AquariumCompat/.cursor/rules/TAILWIND_CSS_ERRORS.mdc
+<code_block_to_apply_changes_from>
+Syntax error: `@layer utilities` is used but no matching `@tailwind utilities` directive is present.
+```
+
+**Why it fails:**
+- `@layer` directives must be in the same file that contains the corresponding `@tailwind` directives
+- When you import a CSS file with `@layer` directives, Tailwind can't find the matching `@tailwind` directives
+- Tailwind processes layers in the order they appear in files with `@tailwind` directives
+
+**❌ WRONG:**
+```css
+/* theme.css - imported file */
+@layer utilities {
+  .custom-class {
+    @apply some-utility;
+  }
+}
+```
+
+**✅ CORRECT - Option 1: Use regular CSS (Recommended)**
+```css
+/* theme.css - imported file */
+.custom-class {
+  /* Use regular CSS properties */
+  background: var(--custom-color);
+  backdrop-filter: blur(12px);
+}
+```
+
+**✅ CORRECT - Option 2: Put layers in main CSS file**
+```css
+/* globals.css - main file with @tailwind directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer utilities {
+  .custom-class {
+    @apply some-utility;
+  }
+}
+
+/* Import theme after layers */
+@import './theme.css';
+```
+
+---
+
+## Tailwind CSS Best Practices
+
+### 1. File Structure Rules
+
+**Main CSS file (globals.css or index.css):**
+- MUST contain `@tailwind base;`, `@tailwind components;`, `@tailwind utilities;`
+- CAN contain `@layer` directives
+- CAN import other CSS files
+
+**Imported CSS files (theme.css, components.css, etc.):**
+- MUST NOT contain `@layer` directives
+- CAN contain regular CSS
+- CAN contain CSS custom properties (variables)
+- CAN use `@apply` but only in the main file's `@layer` blocks
+
+### 2. Using @apply Directive
+
+**❌ WRONG:**
+```css
+/* theme.css - imported file */
+.my-button {
+  @apply bg-blue-500 text-white px-4 py-2;
+}
+```
+
+**✅ CORRECT:**
+```css
+/* globals.css - main file */
+@layer components {
+  .my-button {
+    @apply bg-blue-500 text-white px-4 py-2;
+  }
+}
+```
+
+**✅ ALTERNATIVE: Use regular CSS**
+```css
+/* theme.css - imported file */
+.my-button {
+  background-color: rgb(59 130 246);
+  color: white;
+  padding: 0.5rem 1rem;
+}
+```
+
+### 3. CSS Custom Properties (Variables)
+
+**✅ SAFE - Can be used anywhere:**
+```css
+/* theme.css - imported file */
+:root {
+  --primary-color: #3b82f6;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+}
+
+.my-element {
+  background: var(--glass-bg);
+  color: var(--primary-color);
+}
+```
+
+---
+
+## Common Tailwind Errors & Solutions
+
+### Error 1: Missing @tailwind Directives
+
+**Error:**
+```
+Cannot find module '@tailwindcss/...' or similar
+```
+
+**Solution:**
+- Ensure `@tailwind base;`, `@tailwind components;`, `@tailwind utilities;` are in your main CSS file
+- Check that Tailwind is properly installed: `npm install -D tailwindcss`
+
+### Error 2: @apply Cannot Be Used
+
+**Error:**
+```
+@apply cannot be used within @layer
+```
+
+**Solution:**
+- Only use `@apply` inside `@layer` blocks
+- Or use regular CSS properties instead
+
+### Error 3: Unknown Utility Class
+
+**Error:**
+```
+Unknown utility class 'bg-custom-color'
+```
+
+**Solution:**
+- Check if the class exists in Tailwind
+- If custom, add it to your theme configuration or use inline styles
+- Use CSS custom properties with regular CSS instead
+
+### Error 4: PostCSS Configuration Issues
+
+**Error:**
+```
+PostCSS plugin tailwindcss requires PostCSS 8
+```
+
+**Solution:**
+- Ensure compatible versions:
+  - Tailwind CSS v3.x requires PostCSS 8.x
+  - Check `package.json` for version conflicts
+- Update if needed: `npm install -D postcss@latest tailwindcss@latest`
+
+### Error 5: JSX Syntax Errors from Missing Closing Tags
+
+**Error:**
+```
+Unexpected token `div`. Expected jsx identifier
+```
+
+**Solution:**
+- Always ensure JSX elements are properly closed
+- Check for missing closing `</div>` tags
+- Use proper indentation to track nested elements
+- Count opening and closing tags to ensure they match
+
+---
+
+## Implementation Checklist
+
+When creating or modifying CSS files:
+
+- [ ] **Main CSS file** contains `@tailwind` directives
+- [ ] **Imported CSS files** do NOT contain `@layer` directives
+- [ ] **Custom utilities** use regular CSS or are in main file's `@layer utilities`
+- [ ] **Custom components** use regular CSS or are in main file's `@layer components`
+- [ ] **CSS variables** are defined in `:root` and can be used anywhere
+- [ ] **@apply** is only used in main file's `@layer` blocks
+- [ ] **No @tailwind** directives in imported files
+- [ ] **JSX elements** are properly closed with matching tags
+
+---
+
+## File Organization Pattern
+
+### Recommended Structure
+
+```
+/src
+  /styles
+    globals.css          # Main file with @tailwind directives
+    theme.css            # Theme variables and regular CSS
+    components.css       # Component styles (regular CSS)
+```
+
+**globals.css:**
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Layers can go here */
+@layer components {
+  .btn-primary {
+    @apply bg-blue-500 text-white;
+  }
+}
+
+/* Import other files */
+@import './theme.css';
+@import './components.css';
+```
+
+**theme.css:**
+```css
+/* ✅ CSS Variables */
+:root {
+  --primary: #3b82f6;
+  --glass-bg: rgba(255, 255, 255, 0.1);
+}
+
+/* ✅ Regular CSS classes */
+.glass-card {
+  background: var(--glass-bg);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+/* ❌ NO @layer directives */
+/* ❌ NO @apply outside of main file */
+```
+
+---
+
+## Quick Reference: Do's and Don'ts
+
+### ✅ DO:
+- Use `@layer` only in files with `@tailwind` directives
+- Use regular CSS in imported files
+- Use CSS custom properties for theming
+- Put `@apply` in `@layer` blocks in main file
+- Import theme files after `@tailwind` directives
+- Always close JSX elements properly
+- Count opening/closing tags when nesting elements
+
+### ❌ DON'T:
+- Use `@layer` in imported CSS files
+- Use `@apply` outside of `@layer` blocks
+- Put `@tailwind` directives in imported files
+- Mix `@layer` directives across multiple files
+- Import files with `@layer` before `@tailwind` directives
+- Leave JSX elements unclosed
+- Nest elements without tracking closing tags
+
+---
+
+## Debugging Tips
+
+1. **Check file order:** Ensure `@tailwind` directives come before any `@layer` usage
+2. **Verify imports:** Check that imported files don't contain `@layer`
+3. **Build output:** Look for specific file names in error messages
+4. **Tailwind version:** Ensure you're using Tailwind v3.x (not v4) if using `@layer`
+5. **PostCSS config:** Verify `tailwindcss` is in your PostCSS plugins
+6. **JSX structure:** Count opening and closing tags, use proper indentation
+7. **Syntax check:** Run `npm run build` or `next build` to catch syntax errors early
+
+---
+
+## Example: Fixed Bluefin Theme
+
+**Before (❌ Error):**
+```css
+/* bluefin-theme.css */
+@layer utilities {
+  .bluefin-gradient-primary {
+    background: linear-gradient(...);
+  }
+}
+```
+
+**After (✅ Fixed):**
+```css
+/* bluefin-theme.css */
+.bluefin-gradient-primary {
+  background: linear-gradient(...);
+}
+```
+
+**Usage in globals.css:**
+```css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import '../styles/bluefin-theme.css';
+```
+
+---
+
+## Common JSX Structure Errors
+
+### Missing Closing Tags
+
+**Error Pattern:**
+```tsx
+<div className="container">
+  <div className="flex">
+    <div className="item">Content
+    {/* Missing closing </div> tags */}
+  </div>
+</div>
+```
+
+**Fix:**
+```tsx
+<div className="container">
+  <div className="flex">
+    <div className="item">Content</div>
+  </div>
+</div>
+```
+
+### Nested Container Issues
+
+**Common Issue:** Forgetting to close flex/grid containers
+
+**Solution:** Always match opening and closing tags:
+- Count opening `<div>` tags
+- Ensure each has a matching `</div>`
+- Use proper indentation to track nesting
+
+---
+
+## End of Guide
+
+Follow these rules to prevent Tailwind CSS layer directive errors, JSX syntax errors, and other common configuration issues. When in doubt, use regular CSS instead of `@layer` directives in imported files, and always ensure JSX elements are properly closed.
+```
+
+Save this as `/Users/katwalker/AquariumCompat/.cursor/rules/TAILWIND_CSS_ERRORS.mdc`. It includes:
+
+1. The Tailwind layer directive error and fix
+2. Best practices for file structure
+3. Common Tailwind errors and solutions
+4. JSX syntax error prevention
+5. Quick reference do's and don'ts
+6. Debugging tips
+7. Examples of correct vs incorrect patterns
+
+This should help prevent these errors in the future.
+alwaysApply: true
+---

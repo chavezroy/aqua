@@ -1,0 +1,997 @@
+# Finterest - Virtual Aquarium Management App
+## Next.js Implementation Guide
+
+## Overview
+Finterest is a virtual aquarium management application that helps users stock their fish tanks while checking compatibility and bioload capacity. This document provides complete specifications for implementing this design in Next.js.
+
+---
+
+## Table of Contents
+1. [Tech Stack](#tech-stack)
+2. [Design System](#design-system)
+3. [Project Structure](#project-structure)
+4. [Data Models](#data-models)
+5. [Component Specifications](#component-specifications)
+6. [Business Logic](#business-logic)
+7. [Implementation Guide](#implementation-guide)
+8. [Common Pitfalls](#common-pitfalls)
+
+---
+
+## Tech Stack
+
+### Required Dependencies
+```json
+{
+  "dependencies": {
+    "react": "^18.2.0",
+    "next": "^14.0.0",
+    "lucide-react": "latest",
+    "sonner": "latest",
+    "@radix-ui/react-alert-dialog": "latest",
+    "@radix-ui/react-dialog": "latest",
+    "@radix-ui/react-dropdown-menu": "latest",
+    "@radix-ui/react-label": "latest",
+    "@radix-ui/react-slot": "latest",
+    "class-variance-authority": "latest",
+    "clsx": "latest",
+    "tailwind-merge": "latest"
+  },
+  "devDependencies": {
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.0.0",
+    "@types/react": "^18.2.0",
+    "@types/node": "^20.0.0"
+  }
+}
+```
+
+### Tailwind Configuration (v4.0)
+Use CSS-based configuration in `/src/styles/theme.css`:
+```css
+@import "tailwindcss";
+
+/* No tailwind.config.js file needed for v4.0 */
+```
+
+---
+
+## Design System
+
+### Color Palette
+```css
+/* Primary Gradient */
+background: linear-gradient(to bottom right, #22d3ee, #3b82f6, #2563eb)
+/* cyan-400 → blue-500 → blue-600 */
+
+/* Glass Morphism Cards */
+background: rgba(255, 255, 255, 0.1)
+backdrop-filter: blur(12px)
+border: 1px solid rgba(255, 255, 255, 0.2)
+
+/* Secondary Glass Cards (nested) */
+background: rgba(255, 255, 255, 0.2)
+backdrop-filter: blur(8px)
+border: 1px solid rgba(255, 255, 255, 0.3)
+
+/* Status Colors */
+Success: #22C55E (green-500)
+Warning: #F59E0B (orange-500)
+Critical: #EF4444 (red-500)
+Info: #22D3EE (cyan-400)
+```
+
+### Typography
+- **Headers**: White text with drop-shadow for readability on gradients
+- **Body**: White/80-90% opacity for secondary text
+- **Don't use Tailwind font-size, font-weight, or line-height classes** unless specifically requested
+- Let default HTML element typography from theme.css apply
+
+### Effects & Styling
+```css
+/* Decorative Background Bubbles */
+- Large blur circles (blur-3xl, blur-2xl)
+- White and blue tints at 5-20% opacity
+- Absolute positioned across viewport
+- pointer-events: none
+
+/* Card Shadows */
+- Primary cards: shadow-xl
+- Nested elements: shadow-lg
+- Hover states: increased shadow + opacity
+
+/* Border Radius */
+- Large cards: rounded-2xl (16px)
+- Nested cards: rounded-xl (12px)
+- Small elements: rounded-lg (8px)
+- Circular badges: rounded-full
+
+/* Gradient Buttons */
+background: linear-gradient(to right, #06b6d4, #3b82f6)
+/* cyan-500 → blue-500 */
+hover: linear-gradient(to right, #0891b2, #2563eb)
+/* cyan-600 → blue-600 */
+```
+
+### Icon System
+- Use **lucide-react** icons exclusively
+- Icon sizes: w-4 h-4 (small), w-5 h-5 (medium), w-6 h-6 (large)
+- Emojis for section headers: 🐠, 🐟, 📊, ⚠️
+
+---
+
+## Project Structure
+
+### Next.js App Router Structure
+```
+/app
+  /components
+    /ui              # Shadcn components
+      - button.tsx
+      - input.tsx
+      - label.tsx
+      - badge.tsx
+      - alert-dialog.tsx
+      - dialog.tsx
+      - dropdown-menu.tsx
+    - Header.tsx
+    - TankOverview.tsx
+    - TankStatus.tsx
+    - AddFish.tsx
+    - CurrentStock.tsx
+    - CompatibilityIssues.tsx
+    - SaveTankDialog.tsx
+    - SetupTank.tsx
+    - BackgroundBubbles.tsx
+  - page.tsx         # Main app component
+  - layout.tsx       # Root layout
+  /lib
+    - utils.ts       # cn() utility
+    - fishDatabase.ts
+    - compatibility.ts
+    - bioload.ts
+  /types
+    - index.ts       # All TypeScript types
+/public
+  # Static assets if needed
+```
+
+### Key Files
+
+**app/layout.tsx**
+```tsx
+import { Toaster } from 'sonner';
+import '../styles/globals.css';
+import '../styles/theme.css';
+
+export default function RootLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  return (
+    <html lang="en">
+      <body>
+        {children}
+        <Toaster position="top-right" />
+      </body>
+    </html>
+  );
+}
+```
+
+---
+
+## Data Models
+
+### TypeScript Interfaces
+
+```typescript
+// Fish Species
+export interface Fish {
+  id: string;
+  commonName: string;
+  scientificName: string;
+  size: number; // inches
+  minTankSize: number; // gallons
+  temperatureRange: [number, number]; // Fahrenheit
+  phRange: [number, number];
+  aggression: 'peaceful' | 'semi-aggressive' | 'aggressive';
+  schoolingRequired: boolean;
+  minSchoolSize?: number;
+  bioloadFactor: number; // 1.0 = normal, higher = more waste
+}
+
+// Tank Configuration
+export interface TankConfig {
+  volume: number; // gallons
+  length?: number; // inches
+  width?: number; // inches
+  height?: number; // inches
+  temperature: number; // Fahrenheit
+  ph: number;
+  hasFilter: boolean;
+}
+
+// Tank Fish (stock item)
+export interface TankFish extends Fish {
+  quantity: number;
+}
+
+// Saved Tank
+export interface SavedTank {
+  id: string;
+  name: string;
+  config: TankConfig;
+  fish: TankFish[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// Compatibility Issue
+export interface CompatibilityIssue {
+  type: 'warning' | 'critical';
+  message: string;
+}
+```
+
+---
+
+## Component Specifications
+
+### 1. BackgroundBubbles Component
+```tsx
+export function BackgroundBubbles() {
+  return (
+    <div className="fixed inset-0 overflow-hidden pointer-events-none z-0">
+      {/* Large decorative bubbles */}
+      <div className="absolute top-20 left-10 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+      <div className="absolute top-40 right-20 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
+      <div className="absolute bottom-20 left-1/4 w-80 h-80 bg-cyan-400/20 rounded-full blur-3xl" />
+      <div className="absolute top-1/3 right-1/3 w-72 h-72 bg-blue-300/10 rounded-full blur-3xl" />
+      <div className="absolute bottom-40 right-10 w-56 h-56 bg-teal-400/20 rounded-full blur-3xl" />
+      
+      {/* Small bubbles */}
+      <div className="absolute top-1/4 left-1/3 w-32 h-32 bg-white/5 rounded-full blur-xl" />
+      <div className="absolute bottom-1/3 right-1/4 w-40 h-40 bg-cyan-300/10 rounded-full blur-2xl" />
+      <div className="absolute top-2/3 left-1/2 w-24 h-24 bg-blue-200/10 rounded-full blur-xl" />
+    </div>
+  );
+}
+```
+
+### 2. Header Component
+**Features:**
+- Sticky top navigation with glass morphism
+- Branding with circular fish icon badge
+- Tank name display
+- Action buttons: Start Over, Change Tank, Save, Edit, Clear
+- Dropdown menu for saved tanks with delete functionality
+
+**Styling:**
+```css
+bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-40 shadow-lg
+```
+
+**Buttons:**
+- Secondary buttons: `bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white`
+- Destructive: `bg-red-500/80 hover:bg-red-600/80`
+- Gradient primary: `bg-gradient-to-r from-cyan-500 to-blue-500`
+
+### 3. SetupTank Component
+**Full-screen centered form with:**
+- Gradient background with decorative bubbles
+- Centered white card (max-w-2xl) with glass effect
+- Large circular fish icon badge (w-24 h-24)
+- Form fields:
+  - Tank Volume (single field)
+  - Dimensions: Length, Width, Height (3-column grid)
+  - Temperature & pH (2-column grid - INLINE)
+- Gradient submit button
+
+**Layout:**
+```tsx
+<div className="min-h-screen bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 flex items-center justify-center p-4 relative overflow-hidden">
+  <BackgroundBubbles />
+  <div className="bg-white/95 backdrop-blur-md rounded-3xl shadow-2xl p-8 max-w-2xl w-full relative z-10 border border-white/50">
+    {/* Content */}
+  </div>
+</div>
+```
+
+### 4. TankOverview Component
+**4-column grid displaying:**
+- Volume (with dimensions if available)
+- Temperature (with Thermometer icon)
+- pH Level (with classification: Acidic/Neutral/Alkaline)
+- Stock (count + species count)
+- Surface Area (optional, bottom section)
+
+**Styling:**
+- Main card: `bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-xl`
+- Stat cards: `bg-white/20 backdrop-blur-sm rounded-xl shadow-lg p-4 border border-white/30`
+
+### 5. TankStatus Component
+**Displays:**
+- Bioload capacity percentage with color-coded progress bar
+  - Green: 0-50%
+  - Orange: 50-80%
+  - Red: 80%+
+- Health score (0-100)
+
+**Progress Bar Implementation:**
+```tsx
+<div className="relative w-full h-6 bg-white/20 backdrop-blur-sm rounded-full overflow-hidden border border-white/30 shadow-inner">
+  <div
+    className="absolute top-0 left-0 h-full rounded-full transition-all duration-300 shadow-lg"
+    style={{
+      width: `${Math.min(bioloadPercentage, 100)}%`,
+      backgroundColor: getBioloadColor(bioloadPercentage),
+    }}
+  />
+</div>
+```
+
+### 6. AddFish Component
+**Search functionality:**
+- Search input with Search icon
+- Filters fish by common name OR scientific name (case-insensitive)
+- Dropdown results appear below input
+- Click to add fish to tank
+
+**Dropdown styling:**
+```css
+absolute z-10 w-full mt-2 bg-white/95 backdrop-blur-md border border-white/50 rounded-lg shadow-xl max-h-60 overflow-y-auto
+```
+
+### 7. CurrentStock Component
+**2-column grid of fish cards:**
+
+Each card displays:
+- Common name & scientific name
+- Remove button (X icon, top-right)
+- Size, Min Tank Size
+- Temperature range (with Thermometer icon)
+- pH range (with Droplet icon)
+- Aggression badge (color-coded)
+- Schooling badge (if applicable)
+- Quantity controls (+/- buttons with count)
+
+**Aggression Badge Colors:**
+```tsx
+peaceful: 'bg-green-100 text-green-700'
+semi-aggressive: 'bg-yellow-100 text-yellow-700'
+aggressive: 'bg-red-100 text-red-700'
+```
+
+### 8. CompatibilityIssues Component
+**Sticky sidebar component:**
+```css
+sticky top-4 max-h-[calc(100vh-2rem)] overflow-y-auto
+```
+
+**Issue types:**
+- **Critical** (red): AlertCircle icon, `bg-red-500/20 border border-red-400/30 text-red-100`
+- **Warning** (orange): AlertTriangle icon, `bg-orange-500/20 border border-orange-400/30 text-orange-100`
+
+**Success state:**
+```tsx
+<div className="bg-green-500/20 backdrop-blur-sm border border-green-400/30 rounded-xl p-4 text-center">
+  <p className="text-green-100 font-medium">✓ All checks passed!</p>
+</div>
+```
+
+### 9. SaveTankDialog Component
+**Radix Dialog with:**
+- Input for tank name
+- Save/Cancel buttons
+- Handles both new tanks and updates to existing tanks
+
+---
+
+## Business Logic
+
+### Fish Database (12+ Species)
+```typescript
+export const FISH_DATABASE: Fish[] = [
+  {
+    id: 'neon-tetra',
+    commonName: 'Neon Tetra',
+    scientificName: 'Paracheirodon innesi',
+    size: 1.5,
+    minTankSize: 10,
+    temperatureRange: [72, 76],
+    phRange: [6.0, 7.0],
+    aggression: 'peaceful',
+    schoolingRequired: true,
+    minSchoolSize: 6,
+    bioloadFactor: 0.5,
+  },
+  {
+    id: 'guppy',
+    commonName: 'Guppy',
+    scientificName: 'Poecilia reticulata',
+    size: 2.0,
+    minTankSize: 5,
+    temperatureRange: [72, 82],
+    phRange: [6.8, 7.8],
+    aggression: 'peaceful',
+    schoolingRequired: false,
+    bioloadFactor: 0.8,
+  },
+  {
+    id: 'betta',
+    commonName: 'Betta Fish',
+    scientificName: 'Betta splendens',
+    size: 3.0,
+    minTankSize: 5,
+    temperatureRange: [76, 81],
+    phRange: [6.5, 7.5],
+    aggression: 'aggressive',
+    schoolingRequired: false,
+    bioloadFactor: 1.0,
+  },
+  {
+    id: 'goldfish',
+    commonName: 'Goldfish',
+    scientificName: 'Carassius auratus',
+    size: 6.0,
+    minTankSize: 20,
+    temperatureRange: [65, 72],
+    phRange: [7.0, 8.0],
+    aggression: 'peaceful',
+    schoolingRequired: false,
+    bioloadFactor: 2.5,
+  },
+  {
+    id: 'angelfish',
+    commonName: 'Angelfish',
+    scientificName: 'Pterophyllum scalare',
+    size: 6.0,
+    minTankSize: 30,
+    temperatureRange: [75, 82],
+    phRange: [6.5, 7.5],
+    aggression: 'semi-aggressive',
+    schoolingRequired: false,
+    bioloadFactor: 1.5,
+  },
+  {
+    id: 'corydoras',
+    commonName: 'Corydoras Catfish',
+    scientificName: 'Corydoras paleatus',
+    size: 2.5,
+    minTankSize: 10,
+    temperatureRange: [72, 78],
+    phRange: [6.5, 7.5],
+    aggression: 'peaceful',
+    schoolingRequired: true,
+    minSchoolSize: 4,
+    bioloadFactor: 1.0,
+  },
+  {
+    id: 'molly',
+    commonName: 'Molly',
+    scientificName: 'Poecilia sphenops',
+    size: 4.0,
+    minTankSize: 10,
+    temperatureRange: [72, 78],
+    phRange: [7.0, 8.0],
+    aggression: 'peaceful',
+    schoolingRequired: false,
+    bioloadFactor: 1.2,
+  },
+  {
+    id: 'platy',
+    commonName: 'Platy',
+    scientificName: 'Xiphophorus maculatus',
+    size: 2.5,
+    minTankSize: 10,
+    temperatureRange: [70, 77],
+    phRange: [7.0, 8.0],
+    aggression: 'peaceful',
+    schoolingRequired: false,
+    bioloadFactor: 0.9,
+  },
+  {
+    id: 'swordtail',
+    commonName: 'Swordtail',
+    scientificName: 'Xiphophorus hellerii',
+    size: 5.0,
+    minTankSize: 15,
+    temperatureRange: [72, 79],
+    phRange: [7.0, 8.0],
+    aggression: 'peaceful',
+    schoolingRequired: false,
+    bioloadFactor: 1.3,
+  },
+  {
+    id: 'zebra-danio',
+    commonName: 'Zebra Danio',
+    scientificName: 'Danio rerio',
+    size: 2.0,
+    minTankSize: 10,
+    temperatureRange: [64, 74],
+    phRange: [6.5, 7.5],
+    aggression: 'peaceful',
+    schoolingRequired: true,
+    minSchoolSize: 5,
+    bioloadFactor: 0.7,
+  },
+  {
+    id: 'oscar',
+    commonName: 'Oscar',
+    scientificName: 'Astronotus ocellatus',
+    size: 12.0,
+    minTankSize: 55,
+    temperatureRange: [74, 81],
+    phRange: [6.0, 7.5],
+    aggression: 'aggressive',
+    schoolingRequired: false,
+    bioloadFactor: 3.0,
+  },
+  {
+    id: 'discus',
+    commonName: 'Discus',
+    scientificName: 'Symphysodon aequifasciatus',
+    size: 8.0,
+    minTankSize: 50,
+    temperatureRange: [82, 86],
+    phRange: [6.0, 7.0],
+    aggression: 'peaceful',
+    schoolingRequired: true,
+    minSchoolSize: 5,
+    bioloadFactor: 2.0,
+  },
+];
+```
+
+### Bioload Calculation
+```typescript
+export function calculateBioload(fish: TankFish[], tankVolume: number): number {
+  const totalBioload = fish.reduce((sum, f) => {
+    const fishBioload = (f.size * f.bioloadFactor * f.quantity);
+    return sum + fishBioload;
+  }, 0);
+
+  // Base capacity: 1 inch of fish per gallon
+  const baseCapacity = tankVolume;
+  const percentage = (totalBioload / baseCapacity) * 100;
+  
+  return Math.max(0, percentage);
+}
+```
+
+### Health Score Calculation
+```typescript
+export function calculateHealthScore(issues: CompatibilityIssue[]): number {
+  const criticalCount = issues.filter(i => i.type === 'critical').length;
+  const warningCount = issues.filter(i => i.type === 'warning').length;
+  
+  // Start at 100, deduct points
+  let score = 100;
+  score -= criticalCount * 20;
+  score -= warningCount * 10;
+  
+  return Math.max(0, score);
+}
+```
+
+### Compatibility Checks
+```typescript
+export function checkCompatibility(
+  fish: TankFish[],
+  config: TankConfig
+): CompatibilityIssue[] {
+  const issues: CompatibilityIssue[] = [];
+
+  fish.forEach(f => {
+    // Tank size check
+    if (config.volume < f.minTankSize) {
+      issues.push({
+        type: 'critical',
+        message: `${f.commonName} requires at least ${f.minTankSize} gallons (current: ${config.volume} gal)`
+      });
+    }
+
+    // Temperature check
+    if (config.temperature < f.temperatureRange[0] || config.temperature > f.temperatureRange[1]) {
+      issues.push({
+        type: 'warning',
+        message: `${f.commonName} prefers ${f.temperatureRange[0]}-${f.temperatureRange[1]}°F (current: ${config.temperature}°F)`
+      });
+    }
+
+    // pH check
+    if (config.ph < f.phRange[0] || config.ph > f.phRange[1]) {
+      issues.push({
+        type: 'warning',
+        message: `${f.commonName} prefers pH ${f.phRange[0]}-${f.phRange[1]} (current: ${config.ph})`
+      });
+    }
+
+    // Schooling check
+    if (f.schoolingRequired && f.minSchoolSize && f.quantity < f.minSchoolSize) {
+      issues.push({
+        type: 'critical',
+        message: `${f.commonName} requires a school of at least ${f.minSchoolSize} (current: ${f.quantity})`
+      });
+    }
+  });
+
+  // Aggression conflicts
+  const hasAggressive = fish.some(f => f.aggression === 'aggressive');
+  const hasPeaceful = fish.some(f => f.aggression === 'peaceful');
+  
+  if (hasAggressive && hasPeaceful) {
+    issues.push({
+      type: 'critical',
+      message: 'Aggressive fish may harm peaceful species'
+    });
+  }
+
+  // Betta with Betta
+  const bettas = fish.filter(f => f.id === 'betta');
+  if (bettas.length > 0 && bettas[0].quantity > 1) {
+    issues.push({
+      type: 'critical',
+      message: 'Multiple Betta fish will fight - keep only one per tank'
+    });
+  }
+
+  return issues;
+}
+```
+
+### Surface Area Calculation
+```typescript
+export function calculateSurfaceArea(config: TankConfig): number | null {
+  if (!config.length || !config.width) return null;
+  return config.length * config.width;
+}
+```
+
+### pH Classification
+```typescript
+export function getPhClassification(ph: number): string {
+  if (ph < 6.5) return 'Acidic';
+  if (ph > 7.5) return 'Alkaline';
+  return 'Neutral';
+}
+```
+
+---
+
+## Implementation Guide
+
+### Step 1: Project Setup
+```bash
+npx create-next-app@latest finterest --typescript --tailwind --app
+cd finterest
+npm install lucide-react sonner @radix-ui/react-alert-dialog @radix-ui/react-dialog @radix-ui/react-dropdown-menu @radix-ui/react-label @radix-ui/react-slot class-variance-authority clsx tailwind-merge
+```
+
+### Step 2: Shadcn UI Components Setup
+Install these components using shadcn-ui CLI or manually:
+- Button
+- Input
+- Label
+- Badge
+- Alert Dialog
+- Dialog
+- Dropdown Menu
+
+### Step 3: Create Type Definitions
+Create `/app/types/index.ts` with all interfaces from [Data Models](#data-models)
+
+### Step 4: Create Utility Functions
+- `/app/lib/utils.ts` - cn() function
+- `/app/lib/fishDatabase.ts` - Fish database
+- `/app/lib/compatibility.ts` - Compatibility checking logic
+- `/app/lib/bioload.ts` - Bioload calculations
+
+### Step 5: Build Components
+Follow the component specifications in order:
+1. BackgroundBubbles (simplest)
+2. UI components (Button, Input, etc.)
+3. SetupTank
+4. Header
+5. TankOverview
+6. TankStatus
+7. AddFish
+8. CurrentStock
+9. CompatibilityIssues
+10. SaveTankDialog
+
+### Step 6: Main App Logic (page.tsx)
+```typescript
+'use client';
+
+import { useState, useEffect } from 'react';
+import { toast } from 'sonner';
+
+export default function Home() {
+  // State management
+  const [savedTanks, setSavedTanks] = useState<SavedTank[]>([]);
+  const [currentTankId, setCurrentTankId] = useState<string | null>(null);
+  const [tankConfig, setTankConfig] = useState<TankConfig | null>(null);
+  const [tankFish, setTankFish] = useState<TankFish[]>([]);
+  const [currentTankName, setCurrentTankName] = useState<string>('');
+  
+  // Load from localStorage on mount
+  useEffect(() => {
+    const saved = localStorage.getItem('finterest-tanks');
+    if (saved) {
+      setSavedTanks(JSON.parse(saved));
+    }
+  }, []);
+
+  // Save to localStorage when tanks change
+  useEffect(() => {
+    if (savedTanks.length > 0) {
+      localStorage.setItem('finterest-tanks', JSON.stringify(savedTanks));
+    }
+  }, [savedTanks]);
+
+  // Calculated values
+  const bioloadPercentage = tankConfig ? calculateBioload(tankFish, tankConfig.volume) : 0;
+  const issues = tankConfig ? checkCompatibility(tankFish, tankConfig) : [];
+  const healthScore = calculateHealthScore(issues);
+  
+  // ... handlers
+}
+```
+
+### Step 7: Layout Structure
+**Main dashboard layout:**
+```tsx
+<div className="min-h-screen bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600 relative overflow-hidden">
+  <BackgroundBubbles />
+  
+  <div className="relative z-10">
+    <Header {...headerProps} />
+    
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Left 2/3 */}
+        <div className="lg:col-span-2 space-y-6">
+          <AddFish onAddFish={handleAddFish} />
+          <TankOverview config={tankConfig} {...stats} />
+          <TankStatus bioloadPercentage={bioloadPercentage} healthScore={healthScore} />
+          <CurrentStock fish={tankFish} {...handlers} />
+        </div>
+        
+        {/* Right 1/3 Sidebar */}
+        <div>
+          <CompatibilityIssues issues={issues} />
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+```
+
+---
+
+## Common Pitfalls
+
+### 1. Tailwind v4.0 Configuration
+❌ **Don't** create a `tailwind.config.js` file
+✅ **Do** use CSS-based configuration in theme.css
+
+### 2. Typography Classes
+❌ **Don't** use `text-2xl`, `font-bold`, `leading-tight` etc.
+✅ **Do** let default HTML element styles from theme.css apply
+
+### 3. Glass Morphism Stacking
+❌ **Don't** use same opacity for nested cards
+✅ **Do** use:
+- Parent: `bg-white/10`
+- Child: `bg-white/20`
+- Nested child: `bg-white/30`
+
+### 4. localStorage Sync
+❌ **Don't** forget to save to localStorage on state changes
+✅ **Do** use useEffect to sync savedTanks to localStorage
+
+### 5. Search Filtering
+❌ **Don't** filter only by common name
+✅ **Do** filter by common name OR scientific name (case-insensitive)
+
+```typescript
+const filteredFish = FISH_DATABASE.filter(
+  (fish) =>
+    fish.commonName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    fish.scientificName.toLowerCase().includes(searchTerm.toLowerCase())
+);
+```
+
+### 6. Quantity Controls
+❌ **Don't** allow quantity to go below 1
+✅ **Do** disable decrement button when quantity === 1
+
+### 7. Bioload Progress Bar
+❌ **Don't** let progress bar exceed 100% width
+✅ **Do** use `Math.min(bioloadPercentage, 100)`
+
+### 8. Tank Deletion
+❌ **Don't** delete current tank without clearing UI
+✅ **Do** check if deleting current tank and reset to null
+
+```typescript
+const handleDeleteTank = (id: string) => {
+  setSavedTanks(prev => prev.filter(t => t.id !== id));
+  if (currentTankId === id) {
+    setCurrentTankId(null);
+    setTankConfig(null);
+    setTankFish([]);
+    setCurrentTankName('');
+  }
+  toast.success('Tank deleted');
+};
+```
+
+### 9. Schooling Fish Warning
+❌ **Don't** check only if schoolingRequired is true
+✅ **Do** also check minSchoolSize exists before comparing
+
+```typescript
+if (f.schoolingRequired && f.minSchoolSize && f.quantity < f.minSchoolSize) {
+  // Add warning
+}
+```
+
+### 10. Temperature & pH Inline Layout
+❌ **Don't** put them in separate rows
+✅ **Do** use 2-column grid:
+
+```tsx
+<div className="grid grid-cols-2 gap-4">
+  <div>{/* Temperature */}</div>
+  <div>{/* pH */}</div>
+</div>
+```
+
+---
+
+## Testing Checklist
+
+### Functionality Tests
+- [ ] Create new tank with all parameters
+- [ ] Add fish to tank
+- [ ] Increase/decrease fish quantity
+- [ ] Remove fish from tank
+- [ ] Save tank with custom name
+- [ ] Load saved tank
+- [ ] Edit tank parameters
+- [ ] Delete tank
+- [ ] Clear all fish from tank
+- [ ] Start over (reset app)
+- [ ] Search fish by common name
+- [ ] Search fish by scientific name
+
+### Compatibility Tests
+- [ ] Add fish larger than tank → Critical warning
+- [ ] Add fish with wrong temperature → Warning
+- [ ] Add fish with wrong pH → Warning
+- [ ] Add schooling fish with insufficient quantity → Critical warning
+- [ ] Mix aggressive and peaceful fish → Critical warning
+- [ ] Add multiple Bettas → Critical warning
+- [ ] All checks passed → Green success message
+
+### UI Tests
+- [ ] Responsive layout on mobile
+- [ ] Responsive layout on tablet
+- [ ] Responsive layout on desktop
+- [ ] Glass morphism effects render correctly
+- [ ] Background bubbles don't interfere with clicks
+- [ ] Sticky header works on scroll
+- [ ] Sticky sidebar works on scroll
+- [ ] Toast notifications appear
+- [ ] Dialogs open/close correctly
+- [ ] Dropdown menu works
+- [ ] Progress bar animates smoothly
+- [ ] Bioload color changes at thresholds
+
+### Data Persistence Tests
+- [ ] Refresh page → Saved tanks persist
+- [ ] Close/reopen browser → Data persists
+- [ ] Save multiple tanks → All persist
+- [ ] Update tank → Changes persist
+- [ ] Delete tank → Deletion persists
+
+---
+
+## Additional Notes
+
+### Color-Coded Bioload Thresholds
+- **0-50%**: Green (#22C55E) - Healthy
+- **50-80%**: Orange (#F59E0B) - Caution
+- **80%+**: Red (#EF4444) - Overstocked
+
+### Health Score Penalties
+- Critical issue: -20 points
+- Warning: -10 points
+- Minimum score: 0
+
+### Z-Index Layers
+```
+z-0:  Background bubbles (fixed, pointer-events-none)
+z-10: Main content wrapper
+z-40: Sticky header
+z-50: Modals/dialogs (Radix default)
+```
+
+### Responsive Breakpoints
+- Mobile: < 640px (sm)
+- Tablet: 640px - 1024px (sm to lg)
+- Desktop: 1024px+ (lg)
+
+**Layout changes:**
+- Mobile: Single column, stacked
+- Desktop: 2/3 main content + 1/3 sidebar
+
+---
+
+## Final Implementation Checklist
+
+- [ ] All dependencies installed
+- [ ] TypeScript types defined
+- [ ] Fish database with 12+ species
+- [ ] All utility functions implemented
+- [ ] All components created
+- [ ] Glass morphism styling applied
+- [ ] Gradient backgrounds implemented
+- [ ] Background bubbles component
+- [ ] localStorage integration
+- [ ] Toast notifications working
+- [ ] All compatibility checks functioning
+- [ ] Bioload calculation accurate
+- [ ] Health score calculation correct
+- [ ] Responsive design tested
+- [ ] No console errors
+- [ ] All features from original spec working
+
+---
+
+## Quick Reference: Key Class Patterns
+
+```css
+/* Main gradient background */
+bg-gradient-to-br from-cyan-400 via-blue-500 to-blue-600
+
+/* Primary card (outer) */
+bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-xl
+
+/* Secondary card (nested) */
+bg-white/20 backdrop-blur-sm border border-white/30 rounded-xl shadow-lg
+
+/* Header */
+bg-white/10 backdrop-blur-md border-b border-white/20 sticky top-0 z-40 shadow-lg
+
+/* Gradient button */
+bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600
+
+/* Glass button */
+bg-white/20 hover:bg-white/30 backdrop-blur-sm border border-white/30 text-white
+
+/* Icon badge */
+bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center
+
+/* Progress bar container */
+bg-white/20 backdrop-blur-sm rounded-full border border-white/30 shadow-inner
+
+/* Critical alert */
+bg-red-500/20 border border-red-400/30 text-red-100
+
+/* Warning alert */
+bg-orange-500/20 border border-orange-400/30 text-orange-100
+
+/* Success alert */
+bg-green-500/20 border border-green-400/30 text-green-100
+```
+
+---
+
+## End of Specification
+
+This document contains all necessary information to recreate the Finterest application in Next.js with pixel-perfect accuracy and full functionality. Follow the specifications carefully and refer to the Common Pitfalls section to avoid issues.

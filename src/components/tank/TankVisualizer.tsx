@@ -21,57 +21,61 @@ export function TankVisualizer() {
     : null;
 
   return (
-    <div className="bg-gradient-to-b from-blue-50 to-blue-100 rounded-lg p-6 border-2 border-blue-200">
-      <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-        <Droplet className="text-[#14B8A6]" size={24} />
-        Tank Overview
-      </h3>
+    <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl p-6 shadow-xl">
+      <div className="flex items-center gap-2 mb-6">
+        <div className="w-10 h-10 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full flex items-center justify-center shadow-lg">
+          <Droplet className="w-6 h-6 text-white" />
+        </div>
+        <h3 className="text-lg font-semibold text-white drop-shadow-lg">Tank Overview</h3>
+      </div>
       
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <div className="bg-white rounded-lg p-3 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">Volume</p>
-          <p className="text-lg font-bold">{formatVolume(config.volume_liters, unitSystem)}</p>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+        <div className="bg-white/20 backdrop-blur-sm rounded-xl shadow-lg p-4 border border-white/30">
+          <p className="text-xs text-white/80 mb-1">Volume</p>
+          <p className="text-lg font-bold text-white">{formatVolume(config.volume_liters, unitSystem)}</p>
           {config.dimensions && (
-            <p className="text-xs text-gray-400 mt-1">
+            <p className="text-xs text-white/70 mt-1">
               {formatLength(config.dimensions.length, unitSystem)} × {formatLength(config.dimensions.width, unitSystem)} × {formatLength(config.dimensions.height, unitSystem)}
             </p>
           )}
         </div>
 
-        <div className="bg-white rounded-lg p-3 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+        <div className="bg-white/20 backdrop-blur-sm rounded-xl shadow-lg p-4 border border-white/30">
+          <p className="text-xs text-white/80 mb-1 flex items-center gap-1">
             <Thermometer size={12} />
             Temperature
           </p>
-          <p className="text-lg font-bold">{formatTemperature(config.temperature, unitSystem)}</p>
+          <p className="text-lg font-bold text-white">{formatTemperature(config.temperature, unitSystem)}</p>
         </div>
 
-        <div className="bg-white rounded-lg p-3 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1">pH Level</p>
-          <p className="text-lg font-bold">{config.ph.toFixed(1)}</p>
-          <p className="text-xs text-gray-400">
+        <div className="bg-white/20 backdrop-blur-sm rounded-xl shadow-lg p-4 border border-white/30">
+          <p className="text-xs text-white/80 mb-1">pH Level</p>
+          <p className="text-lg font-bold text-white">{config.ph.toFixed(1)}</p>
+          <p className="text-xs text-white/70">
             {config.ph < 7 ? "Acidic" : config.ph > 7 ? "Alkaline" : "Neutral"}
           </p>
         </div>
 
-        <div className="bg-white rounded-lg p-3 shadow-sm">
-          <p className="text-xs text-gray-500 mb-1 flex items-center gap-1">
+        <div className="bg-white/20 backdrop-blur-sm rounded-xl shadow-lg p-4 border border-white/30">
+          <p className="text-xs text-white/80 mb-1 flex items-center gap-1">
             <Gauge size={12} />
             Stock
           </p>
-          <p className="text-lg font-bold">{totalFish}</p>
-          <p className="text-xs text-gray-400">
+          <p className="text-lg font-bold text-white">{totalFish}</p>
+          <p className="text-xs text-white/70">
             {stockedFish.length} {stockedFish.length === 1 ? "species" : "species"}
           </p>
         </div>
       </div>
       
       {surfaceArea && (
-        <div className="mt-4 pt-4 border-t border-blue-200">
-          <div className="flex items-center gap-2 text-sm">
-            <Ruler className="text-[#14B8A6]" size={16} />
-            <span className="text-gray-600">Surface Area:</span>
-            <span className="font-semibold">
+        <div className="mt-6 pt-4 border-t border-white/20">
+          <div className="flex items-center gap-2 text-sm text-white">
+            <div className="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-lg flex items-center justify-center">
+              <Ruler className="w-4 h-4 text-white" />
+            </div>
+            <span className="font-medium">Surface Area:</span>
+            <span className="font-bold">
               {unitSystem === "metric" 
                 ? `${surfaceArea.toFixed(0)} cm²`
                 : `${(surfaceArea / 6.4516).toFixed(0)} in²`}
